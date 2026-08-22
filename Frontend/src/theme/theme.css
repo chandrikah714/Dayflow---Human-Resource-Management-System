@@ -1,0 +1,201 @@
+/* ==========================================================================
+   Dayflow HRMS — design tokens
+   --------------------------------------------------------------------------
+   Two themes, one system:
+   - [data-theme="dark"]  → "night shift" console feel, inspired by the
+     generative-art-platform reference: near-black canvas, one electric
+     violet brand accent, glow/spotlight interactions as the signature move
+     (this is what powers ChromaGrid + the glow buttons below).
+   - [data-theme="light"] → gallery-wall calm, combining the mental-health
+     reference (soft, breathable, reassuring) with the nft-art-gallery
+     reference (cards presented like framed pieces, generous mat/border).
+   Same brand hue (violet) anchors both modes so switching themes never
+   feels like a different product — only the surroundings change.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Type */
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.8125rem;
+  --fs-base: 0.9375rem;
+  --fs-md: 1.0625rem;
+  --fs-lg: 1.375rem;
+  --fs-xl: 1.875rem;
+  --fs-2xl: 2.5rem;
+
+  /* Layout */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --nav-height: 64px;
+  --max-content: 1200px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* Motion — respected by prefers-reduced-motion below */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 120ms;
+  --dur-base: 220ms;
+  --dur-slow: 420ms;
+
+  color-scheme: light dark;
+}
+
+/* ---------------------------------------------------------------------- *
+ * Dark theme — "night shift"
+ * ---------------------------------------------------------------------- */
+[data-theme='dark'] {
+  --canvas: #0b0b10;
+  --surface: #14141c;
+  --surface-raised: #1b1b26;
+  --surface-hover: #21212e;
+  --border: #2a2a38;
+  --border-strong: #3a3a4c;
+
+  --ink: #f2f1f7;
+  --ink-secondary: #b3b1c2;
+  --ink-muted: #7c7a8c;
+
+  --brand: #7c6cf0;
+  --brand-strong: #9788ff;
+  --brand-ink: #ffffff;
+  --brand-glow: rgba(124, 108, 240, 0.55);
+
+  --accent-cyan: #37e6c4;
+  --accent-coral: #f0997b;
+
+  --success: #3fb27f;
+  --success-bg: rgba(63, 178, 127, 0.16);
+  --warning: #f0a93b;
+  --warning-bg: rgba(240, 169, 59, 0.16);
+  --danger: #e4584f;
+  --danger-bg: rgba(228, 88, 79, 0.16);
+
+  --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.45);
+  --spotlight: rgba(255, 255, 255, 0.28);
+}
+
+/* ---------------------------------------------------------------------- *
+ * Light theme — "gallery wall"
+ * ---------------------------------------------------------------------- */
+[data-theme='light'] {
+  --canvas: #f6f3ec;
+  --surface: #ffffff;
+  --surface-raised: #fbf9f4;
+  --surface-hover: #f1ede2;
+  --border: #e4ded0;
+  --border-strong: #d3cbb8;
+
+  --ink: #2b2a33;
+  --ink-secondary: #5c5a68;
+  --ink-muted: #8b8898;
+
+  --brand: #6c5ce0;
+  --brand-strong: #5847c9;
+  --brand-ink: #ffffff;
+  --brand-glow: rgba(108, 92, 224, 0.22);
+
+  --accent-sage: #6e9c81;
+  --accent-clay: #c97b5f;
+
+  --success: #4a9b72;
+  --success-bg: rgba(74, 155, 114, 0.12);
+  --warning: #c98a2e;
+  --warning-bg: rgba(201, 138, 46, 0.14);
+  --danger: #c94a42;
+  --danger-bg: rgba(201, 74, 66, 0.12);
+
+  --shadow-card: 0 8px 24px rgba(43, 42, 51, 0.08);
+  --spotlight: rgba(108, 92, 224, 0.14);
+}
+
+/* ---------------------------------------------------------------------- *
+ * Base reset
+ * ---------------------------------------------------------------------- */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--canvas);
+  color: var(--ink);
+  font: var(--fs-base) / 1.6 var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-size: var(--fs-2xl);
+}
+h2 {
+  font-size: var(--fs-xl);
+}
+h3 {
+  font-size: var(--fs-lg);
+}
+
+p {
+  margin: 0;
+  color: var(--ink-secondary);
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  color: inherit;
+}
+
+/* Every interactive element gets a visible focus ring — accessibility floor,
+   not optional. Never remove outline without replacing it. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

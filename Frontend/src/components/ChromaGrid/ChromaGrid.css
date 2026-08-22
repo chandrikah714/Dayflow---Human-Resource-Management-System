@@ -1,0 +1,240 @@
+.chroma-grid {
+  position: relative;
+  width: 100%;
+  display: grid;
+  /* Fix: the reference snippet used repeat(var(--cols, 3), 320px) but never
+     set --cols anywhere, so it silently always rendered 3 fixed columns
+     until a breakpoint's media query happened to override it. auto-fit
+     gives real responsiveness without depending on an unset variable. */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 320px));
+  grid-auto-rows: auto;
+  justify-content: center;
+  gap: var(--space-4);
+  max-width: var(--max-content);
+  margin: 0 auto;
+  padding: var(--space-4) 0;
+  box-sizing: border-box;
+  --x: 50%;
+  --y: 50%;
+  --r: 220px;
+}
+
+.chroma-empty {
+  padding: var(--space-6);
+  text-align: center;
+  color: var(--ink-muted);
+}
+
+.chroma-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: border-color var(--dur-base) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+  background: var(--card-gradient, var(--surface-raised));
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+  --spotlight-color: var(--spotlight);
+
+  /* Reset: some cards render as <button> so they're keyboard-activatable */
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  appearance: none;
+}
+
+.chroma-card:hover,
+.chroma-card:focus-visible {
+  border-color: var(--card-border, var(--brand));
+  transform: translateY(-2px);
+}
+
+.chroma-card:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+}
+
+.chroma-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), var(--spotlight-color), transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-out);
+  z-index: 2;
+}
+
+.chroma-card:hover::before,
+.chroma-card:focus-visible::before {
+  opacity: 1;
+}
+
+.chroma-img-wrapper {
+  position: relative;
+  z-index: 1;
+  aspect-ratio: 4 / 3;
+  padding: var(--space-3);
+  box-sizing: border-box;
+  background: transparent;
+}
+
+.chroma-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  display: block;
+}
+
+.chroma-img-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  color: var(--brand-ink);
+  background: linear-gradient(145deg, var(--brand), var(--surface));
+}
+
+.chroma-status-dot {
+  position: absolute;
+  top: calc(var(--space-3) + 8px);
+  right: calc(var(--space-3) + 8px);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--surface);
+  z-index: 2;
+}
+
+.status-present {
+  background: var(--success);
+}
+.status-leave {
+  background: var(--warning);
+}
+.status-absent {
+  background: var(--danger);
+}
+
+.chroma-info {
+  position: relative;
+  z-index: 1;
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  font-family: var(--font-sans);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  row-gap: var(--space-1);
+  column-gap: var(--space-3);
+}
+
+.chroma-name {
+  font-size: var(--fs-base);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.chroma-info .role,
+.chroma-info .handle {
+  color: var(--ink-muted);
+  font-size: var(--fs-sm);
+}
+
+.chroma-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  backdrop-filter: grayscale(1) brightness(0.78);
+  -webkit-backdrop-filter: grayscale(1) brightness(0.78);
+  background: rgba(0, 0, 0, 0.001);
+  mask-image: radial-gradient(
+    circle var(--r) at var(--x) var(--y),
+    transparent 0%,
+    transparent 15%,
+    rgba(0, 0, 0, 0.1) 30%,
+    rgba(0, 0, 0, 0.22) 45%,
+    rgba(0, 0, 0, 0.35) 60%,
+    rgba(0, 0, 0, 0.5) 75%,
+    rgba(0, 0, 0, 0.68) 88%,
+    white 100%
+  );
+  -webkit-mask-image: radial-gradient(
+    circle var(--r) at var(--x) var(--y),
+    transparent 0%,
+    transparent 15%,
+    rgba(0, 0, 0, 0.1) 30%,
+    rgba(0, 0, 0, 0.22) 45%,
+    rgba(0, 0, 0, 0.35) 60%,
+    rgba(0, 0, 0, 0.5) 75%,
+    rgba(0, 0, 0, 0.68) 88%,
+    white 100%
+  );
+}
+
+.chroma-fade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  backdrop-filter: grayscale(1) brightness(0.78);
+  -webkit-backdrop-filter: grayscale(1) brightness(0.78);
+  background: rgba(0, 0, 0, 0.001);
+  mask-image: radial-gradient(
+    circle var(--r) at var(--x) var(--y),
+    white 0%,
+    white 15%,
+    rgba(255, 255, 255, 0.9) 30%,
+    rgba(255, 255, 255, 0.78) 45%,
+    rgba(255, 255, 255, 0.65) 60%,
+    rgba(255, 255, 255, 0.5) 75%,
+    rgba(255, 255, 255, 0.32) 88%,
+    transparent 100%
+  );
+  -webkit-mask-image: radial-gradient(
+    circle var(--r) at var(--x) var(--y),
+    white 0%,
+    white 15%,
+    rgba(255, 255, 255, 0.9) 30%,
+    rgba(255, 255, 255, 0.78) 45%,
+    rgba(255, 255, 255, 0.65) 60%,
+    rgba(255, 255, 255, 0.5) 75%,
+    rgba(255, 255, 255, 0.32) 88%,
+    transparent 100%
+  );
+  opacity: 1;
+  transition: opacity var(--dur-base) ease;
+}
+
+/* Light theme: harsh grayscale+darken reads muddy on a pale gallery-wall
+   background, so the "unfocused" area gently desaturates and warms instead
+   of blackening — same interaction, calmer material. */
+[data-theme='light'] .chroma-overlay,
+[data-theme='light'] .chroma-fade {
+  backdrop-filter: saturate(0.35) brightness(1.02) sepia(0.08);
+  -webkit-backdrop-filter: saturate(0.35) brightness(1.02) sepia(0.08);
+}
+
+@media (max-width: 720px) {
+  .chroma-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chroma-card {
+    transform: none !important;
+  }
+}

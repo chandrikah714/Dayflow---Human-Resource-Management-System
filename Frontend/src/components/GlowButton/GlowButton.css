@@ -1,0 +1,127 @@
+.glow-btn {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-raised);
+  color: var(--ink);
+  overflow: hidden;
+  transition: transform var(--dur-fast) var(--ease-out), border-color var(--dur-base) var(--ease-out);
+  --tone: var(--brand);
+}
+
+.glow-btn--success {
+  --tone: var(--success);
+}
+.glow-btn--danger {
+  --tone: var(--danger);
+}
+
+.glow-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.glow-btn:not(:disabled):active {
+  transform: scale(0.98);
+}
+
+.glow-btn__label {
+  position: relative;
+  z-index: 2;
+}
+
+/* --- variant: glow — animated conic border ring, visible on hover/focus --- */
+.glow-btn--glow::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(from var(--angle, 0deg), transparent 20%, var(--tone), transparent 55%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+  animation: glow-spin 3.2s linear infinite paused;
+}
+
+.glow-btn--glow:hover::before,
+.glow-btn--glow:focus-visible::before {
+  opacity: 1;
+  animation-play-state: running;
+}
+
+@keyframes glow-spin {
+  to {
+    --angle: 360deg;
+  }
+}
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* --- variant: specular — soft highlight that follows the cursor --- */
+.glow-btn--specular {
+  --gx: 50%;
+  --gy: 50%;
+}
+
+.glow-btn--specular::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(120px circle at var(--gx) var(--gy), color-mix(in srgb, var(--tone) 35%, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+  pointer-events: none;
+}
+
+.glow-btn--specular:hover::after,
+.glow-btn--specular:focus-visible::after {
+  opacity: 1;
+}
+
+.glow-btn--specular:hover,
+.glow-btn--specular:focus-visible {
+  border-color: var(--tone);
+}
+
+/* --- variant: ghost — quiet, tertiary actions, no light-up effect --- */
+.glow-btn--ghost {
+  background: transparent;
+  border-color: transparent;
+}
+
+.glow-btn--ghost:hover {
+  background: var(--surface-hover);
+}
+
+/* Filled primary look layers on top of either effect variant via a data
+   attribute the call site can add: className="glow-btn--filled" */
+.glow-btn.glow-btn--filled {
+  background: var(--tone);
+  color: var(--brand-ink);
+  border-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow-btn--glow::before {
+    animation: none !important;
+  }
+}

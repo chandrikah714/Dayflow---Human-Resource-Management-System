@@ -1,0 +1,56 @@
+.check-in-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  box-shadow: var(--shadow-card);
+}
+
+.check-in-panel__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.check-in-panel__time {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.check-in-panel__label {
+  font-size: var(--fs-xs);
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.check-in-panel__value {
+  font-family: var(--font-mono);
+  font-size: var(--fs-lg);
+  color: var(--ink);
+}
+
+.check-in-panel__divider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--border);
+}
+
+.check-in-panel__actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.check-in-panel__actions .glow-btn {
+  flex: 1;
+}
+
+@media (max-width: 480px) {
+  .check-in-panel__actions {
+    flex-direction: column;
+  }
+}
