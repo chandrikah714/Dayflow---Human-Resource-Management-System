@@ -1,241 +1,90 @@
-# Dayflow – Human Resource Management System
+# Dayflow — Employee Dashboard
 
-Dayflow is a Human Resource Management System (HRMS) designed to simplify and manage essential employee and HR operations through a centralized web application.
+React + Vite + Tailwind frontend for the Dayflow HRMS employee workspace: sign in/sign up with role selection, profile view/edit, attendance with a monthly leave trend chart, a leave request form, and leave status history.
 
-This repository contains the **backend** of the Dayflow HRMS application, developed using **Spring Boot** and connected to a **MySQL database**.
-
-## 🚀 Project Overview
-
-Dayflow HRMS provides backend APIs and services for managing HR-related operations such as:
-
-* Employee management
-* Employee profiles
-* Attendance management
-* Leave management
-* Department and job information
-* User authentication and authorization
-* HR and employee role-based operations
-* Payroll-related information
-* HR dashboard data
-
-The backend provides REST APIs that can be consumed by the Dayflow frontend.
-
-## 🛠️ Technologies Used
-
-* **Java 17**
-* **Spring Boot**
-* **Spring Web / REST API**
-* **Spring Data JPA**
-* **Hibernate**
-* **MySQL**
-* **Maven**
-* **XAMPP** – used for local MySQL database management
-* **IntelliJ IDEA**
-
-## 📁 Project Structure
-
-```text
-hrms/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── ...
-│   │   └── resources/
-│   │       ├── application.properties
-│   │       └── ...
-│   └── test/
-│
-├── pom.xml
-└── README.md
-```
-
-## 💻 Prerequisites
-
-Before running the backend, make sure you have installed:
-
-* Java JDK 17
-* Maven
-* MySQL
-* XAMPP
-* IntelliJ IDEA or another Java IDE
-* Git
-
-## 🗄️ Database Setup
-
-The project uses **MySQL** as its database.
-
-XAMPP can be used to run the local MySQL server.
-
-### Start MySQL using XAMPP
-
-1. Open **XAMPP Control Panel**.
-2. Start **MySQL**.
-3. Open phpMyAdmin.
-4. Create the database required by the application.
-
-Example:
-
-```sql
-CREATE DATABASE dayflow_hrms;
-```
-
-Configure the database connection in:
-
-```text
-src/main/resources/application.properties
-```
-
-Example configuration:
-
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/dayflow_hrms
-spring.datasource.username=root
-spring.datasource.password=YOUR_PASSWORD
-
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
-```
-
-> Do not commit real database passwords or other secrets to GitHub.
-
-## ▶️ Running the Backend
-
-### Using IntelliJ IDEA
-
-1. Open the `hrms` project in IntelliJ IDEA.
-2. Make sure Java 17 is configured.
-3. Make sure MySQL is running through XAMPP.
-4. Verify the database configuration.
-5. Run the Spring Boot main application class.
-
-### Using Maven
-
-From the project directory:
+## Run it
 
 ```bash
-mvn spring-boot:run
+npm install
+npm run dev
 ```
 
-The backend will start on the configured server port.
+Open the URL Vite prints (usually `http://localhost:5173`).
 
-For example:
+There's nothing else to configure — the app runs entirely on **built-in demo data** stored in your browser's `localStorage`, so you can click through every screen (sign up, edit profile, submit a leave request, watch it show up as "Pending") without any backend running.
 
-```text
-http://localhost:8080
+## Connecting your Spring Boot backend
+
+1. Copy `.env.example` to `.env` and set `VITE_API_BASE_URL` to your backend, e.g.:
+   ```
+   VITE_API_BASE_URL=http://localhost:8080/api
+   ```
+2. Restart `npm run dev`.
+
+Every screen calls `src/lib/api.js` first. If your backend responds, its data is used. If the backend is unreachable (network error), the app **automatically falls back to demo data** — so frontend and backend teams can work independently. Once your backend is live and responding, the fallback simply never triggers.
+
+### Expected endpoints
+
+Adjust field names in `src/lib/api.js` / the page components if your backend's JSON shape differs — everything is read in one place per endpoint.
+
+| Method | Path | Body | Response |
+|---|---|---|---|
+| POST | `/auth/login` | `{ email, password }` | `{ token, user }` |
+| POST | `/auth/register` | `{ employeeId, name, email, password, role }` | `{ token, user }` |
+| GET | `/employee/profile` | — | `User` (see below) |
+| PUT | `/employee/profile` | `{ phone, address, profilePicture, ... }` | updated `User` |
+| GET | `/employee/attendance` | — | `{ totalAnnual, taken, remaining, paidTaken, unpaidTaken, monthlyTrend: [{ month, paid, unpaid }] }` |
+| GET | `/employee/leave-requests` | — | `LeaveRequest[]` |
+| POST | `/employee/leave-requests` | `{ type, startDate, endDate, reason }` | created `LeaveRequest` |
+
+All authenticated requests send `Authorization: Bearer <token>` using the token returned from login/register.
+
+**`User` shape:**
+```ts
+{
+  id, employeeId, name, email, role, // "EMPLOYEE" | "ADMIN"
+  phone, address, profilePicture,
+  dateOfBirth, gender,
+  designation, department, dateOfJoining, employmentType, reportingManager,
+  salary: { currency, basic, hra, allowances, deductions, netPay },
+  documents: [{ id, name, type, uploadedAt }],
+}
 ```
 
-## 🔗 Frontend Integration
-
-The Dayflow frontend communicates with this backend through REST APIs.
-
-The frontend should use the backend base URL:
-
-```text
-http://localhost:8080
+**`LeaveRequest` shape:**
+```ts
+{
+  id, type,        // "PAID" | "UNPAID"
+  startDate, endDate, days, reason,
+  status,           // "PENDING" | "APPROVED" | "REJECTED"
+  requestedAt, decidedAt,
+}
 ```
 
-API endpoints can then be accessed using paths defined by the backend controllers.
+## Project structure
 
-Example:
-
-```text
-GET    /api/employees
-POST   /api/employees
-PUT    /api/employees/{id}
-DELETE /api/employees/{id}
+```
+src/
+  components/
+    ui/            Button, Input, Textarea, Select, Card, Badge, Label
+    DashboardShell.jsx   Sidebar layout (Profile, Attendance, Request leave, Leave status, Logout)
+    AuthLayout.jsx       Split-screen layout for Login/Register
+    DayflowBrand.jsx
+  lib/
+    auth.js         Token/user storage (localStorage)
+    api.js          Fetch client with automatic demo-data fallback
+    mock-data.js     Seeded demo data + mock resolvers
+    utils.js         cn() class merge helper
+  pages/
+    Login.jsx, Register.jsx
+    Profile.jsx      View/edit: personal, job, salary, documents, picture
+    Attendance.jsx    Leave balance + monthly paid/unpaid trend chart
+    LeaveRequest.jsx  Submit a leave request
+    LeaveStatus.jsx   History with Pending/Approved/Rejected
 ```
 
-> The exact endpoints depend on the controllers implemented in the project.
+## Notes
 
-## 🔐 Security
-
-The application is designed to support role-based access for different users such as:
-
-* Admin
-* HR
-* Employee
-
-Sensitive configuration values should be stored using environment variables or local configuration files rather than committing them to the repository.
-
-## 🧪 Testing
-
-To run the backend tests:
-
-```bash
-mvn test
-```
-
-## 📦 Build
-
-To create the backend JAR:
-
-```bash
-mvn clean package
-```
-
-The generated JAR will be available inside:
-
-```text
-target/
-```
-
-## 🌐 CORS
-
-When connecting the Dayflow frontend to the backend during local development, configure CORS to allow requests from the frontend development server.
-
-For example, if the frontend runs on:
-
-```text
-http://localhost:3000
-```
-
-or
-
-```text
-http://localhost:5173
-```
-
-the backend should allow the appropriate frontend origin.
-
-## 🔄 Development Workflow
-
-```text
-Dayflow Frontend
-       |
-       | REST API
-       ↓
-Dayflow Spring Boot Backend
-       |
-       | JPA / Hibernate
-       ↓
-MySQL Database
-       ↑
-       |
-     XAMPP
-```
-
-## 📌 Current Setup
-
-The current development environment uses:
-
-* **Backend:** Spring Boot
-* **Java:** JDK 17
-* **Database:** MySQL
-* **Database Server:** XAMPP
-* **IDE:** IntelliJ IDEA
-* **Frontend:** Separate Dayflow HRMS frontend
-* **API Communication:** REST APIs
-
-## 👩‍💻 Project
-
-**Project Name:** Dayflow – Human Resource Management System
-
-**Repository:** Dayflow HRMS Backend
-
-This backend is part of the complete Dayflow HRMS application and is intended to work together with the Dayflow frontend.
-
-## 📄 License
-
-This project is developed for educational/project purposes.
-
+- **Role-based editing**: employees can edit phone, address, and profile picture. Admin accounts (`role: "ADMIN"`) additionally see designation/department fields unlocked in the edit form — extend this in `Profile.jsx` as your backend's permission rules require.
+- **Styling**: matches the existing Dayflow brand (warm cream background, deep teal primary, terracotta accent, DM Sans / Instrument Serif / DM Mono) already used in the auth/profile pages from the other Dayflow repos, so it drops into the same product family.
+- **No image/style reference was attached** when this was generated — if you send over the mockup image, share it and the visual details can be refined to match exactly.
